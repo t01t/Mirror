@@ -1,0 +1,8 @@
+/servers
+/compiled
+/bin
+servers.yml
+*.exe
+*.sql
+mirror
+.DS_Store

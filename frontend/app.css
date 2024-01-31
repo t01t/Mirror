@@ -1,0 +1,33 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html{
+    -webkit-tap-highlight-color: rgba(0,0,0,0);
+    -webkit-tap-highlight-color: transparent;
+}
+body{
+    font-family: "Raleway";
+    background-color:#141414;
+    color: white;
+    margin:0;
+    padding:0;
+}
+.no-scrollbar::-webkit-scrollbar {display: none;}
+.no-scrollbar {-ms-overflow-style: none;scrollbar-width: none;}
+.line{white-space: nowrap;}
+::-webkit-scrollbar {width: 5px; height: 5px;}
+::-webkit-scrollbar-track {background: #0d0d0d;}
+::-webkit-scrollbar-thumb {background: #272727;}
+::-webkit-scrollbar-thumb:hover {background: #313131;}
+#gradient-canvas {
+    --gradient-color-1: #5a5a5a;
+    --gradient-color-2: #000;
+    --gradient-color-3: #000;
+    --gradient-color-4: #f8314c;
+    position: fixed;
+    top: 0;
+    height: 100%;
+    width: 100%;
+    z-index: -1;
+}
