@@ -44,7 +44,7 @@ func (ms *MysqlServer) Backup(dbName string, dir ...string) error {
 
 	return nil
 }
-func (ms *MysqlServer) DailyServerDBsBackup(date string) {
+func (ms *MysqlServer) DailyServerDBsBackup(filename string) {
 	for _, db := range ms.Dbs {
 		path := "servers/" + ms.Name + "/" + db + "/daily_fullbackup"
 		if _, err := os.Stat(path); os.IsNotExist(err) {
@@ -55,7 +55,7 @@ func (ms *MysqlServer) DailyServerDBsBackup(date string) {
 			}
 		}
 
-		path += "/" + date + ".log"
+		path += "/" + filename + ".log"
 		if _, err := os.Stat(path); err != nil {
 			ms.Backup(db, path)
 		}

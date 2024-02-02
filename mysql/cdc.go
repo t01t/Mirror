@@ -99,15 +99,15 @@ RESTART:
 		event := Event{
 			Server: ms.Name,
 		}
-		if !helpers.IsInArray(event.Database, ms.Dbs) {
-			continue
-		}
 
 		switch ev.Event.(type) {
 		case *replication.RowsEvent:
 			e := ev.Event.(*replication.RowsEvent)
 			event.Database = string(e.Table.Schema)
 			event.Table = string(e.Table.Table)
+			if !helpers.IsInArray(event.Database, ms.Dbs) {
+				continue
+			}
 			event.Type = operationType(ev.Header.EventType.String())
 			event.Rows = e.Rows
 			fmt.Println("event:", ev.Header.EventType.String(), "database:", event.Database, "table:", event.Table)
