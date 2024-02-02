@@ -6,9 +6,7 @@ import (
 	"path/filepath"
 	"runtime"
 
-	"github.com/getlantern/systray"
 	"github.com/skratchdot/open-golang/open"
-	"github.com/t01t/mirror/frontend"
 	"github.com/t01t/mirror/mysql"
 	"github.com/t01t/mirror/server"
 	"github.com/t01t/mirror/sse"
@@ -16,8 +14,6 @@ import (
 )
 
 func main() {
-	go systray.Run(onReady, onExit)
-
 	loadServersFromYamlFile()
 
 	var serversNames []string
@@ -82,31 +78,4 @@ func loadServersFromYamlFile() {
 			log.Fatal("server", name, "password is empty")
 		}
 	}
-}
-
-func onReady() {
-
-	systray.SetIcon(frontend.LogoPNG)
-	systray.SetTitle("Mirror")
-	systray.SetTooltip("Mirror")
-	mUrl := systray.AddMenuItem("Dashboard", "dashboard")
-	systray.AddSeparator()
-	mForeceExit := systray.AddMenuItem("Close", "close")
-
-	go func() {
-		for {
-			select {
-			case <-mUrl.ClickedCh:
-				open.Run("http://127.0.0.1:2345")
-
-			case <-mForeceExit.ClickedCh:
-				systray.Quit()
-			}
-		}
-	}()
-
-}
-
-func onExit() {
-	os.Exit(0)
 }
