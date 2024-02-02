@@ -44,3 +44,20 @@ func (ms *MysqlServer) Backup(dbName string, dir ...string) error {
 
 	return nil
 }
+func (ms *MysqlServer) DailyServerDBsBackup(date string) {
+	for _, db := range ms.Dbs {
+		path := "servers/" + ms.Name + "/" + db + "/daily_fullbackup"
+		if _, err := os.Stat(path); os.IsNotExist(err) {
+			err := os.MkdirAll(path, 0744)
+			if err != nil {
+				log.Println(ms.Name, db, "FULLBACKUP ERROR making dir", path, ":", err)
+				continue
+			}
+		}
+
+		path += "/" + date + ".log"
+		if _, err := os.Stat(path); err != nil {
+			ms.Backup(db, path)
+		}
+	}
+}

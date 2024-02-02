@@ -7,6 +7,7 @@ import (
 	"os"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/t01t/mirror/helpers"
 	"github.com/t01t/mirror/sse"
@@ -76,6 +77,7 @@ RESTART:
 		fmt.Println("Failed to start binlog sync:", err)
 		return err
 	}
+	today := time.Now().Format("2006-01-02")
 
 	for {
 		ev, err := streamer.GetEvent(context.Background())
@@ -88,19 +90,23 @@ RESTART:
 			}
 			return err
 		}
+		currentDate := time.Now().Format("2006-01-02")
+		if currentDate != today {
+			ms.DailyServerDBsBackup(today)
+			today = currentDate
+		}
 
 		event := Event{
 			Server: ms.Name,
+		}
+		if !helpers.IsInArray(event.Database, ms.Dbs) {
+			continue
 		}
 
 		switch ev.Event.(type) {
 		case *replication.RowsEvent:
 			e := ev.Event.(*replication.RowsEvent)
 			event.Database = string(e.Table.Schema)
-
-			if !helpers.IsInArray(event.Database, ms.Dbs) {
-				continue
-			}
 			event.Table = string(e.Table.Table)
 			event.Type = operationType(ev.Header.EventType.String())
 			event.Rows = e.Rows

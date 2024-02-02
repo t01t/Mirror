@@ -22,7 +22,6 @@ func main() {
 		serversNames = append(serversNames, server.Name)
 	}
 
-	go server.StartDailyBackupScheduler()
 	sse.Init(serversNames)
 	open.Run("http://127.0.0.1:2345")
 	err := server.HttpServerStart()
