@@ -46,7 +46,7 @@ func (ms *MysqlServer) GetTables(db string) (map[string]Table, error) {
 		return nil, err
 	}
 
-	rows, err := ms.db.Query("SHOW TABLES")
+	rows, err := ms.db.Query("SHOW FULL TABLES")
 	if err != nil {
 		return nil, err
 	}
@@ -54,8 +54,8 @@ func (ms *MysqlServer) GetTables(db string) (map[string]Table, error) {
 
 	tables := make(map[string]Table)
 	for rows.Next() {
-		var tableName string
-		err := rows.Scan(&tableName)
+		var tableName, tableType string
+		err := rows.Scan(&tableName, &tableType)
 		if err != nil {
 			return nil, err
 		}
@@ -73,6 +73,7 @@ func (ms *MysqlServer) GetTables(db string) (map[string]Table, error) {
 			Name:     tableName,
 			Columns:  columnNames,
 			Primarys: primarys,
+			Type:     tableType,
 		}
 	}
 

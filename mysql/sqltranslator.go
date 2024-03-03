@@ -12,7 +12,8 @@ func LogToSql(event []interface{}, database *DB) string {
 
 	switch event[0].(float64) {
 	case INSERT:
-		return buildInsertStatment(event[1].(string), event[2].([]interface{}))
+		tableType := database.Tables[event[1].(string)].Type
+		return buildInsertStatment(event[1].(string), event[2].([]interface{}), tableType)
 	case UPDATE:
 		columns := database.Tables[event[1].(string)].Columns
 		primarys := database.Tables[event[1].(string)].Primarys
@@ -116,23 +117,31 @@ func buildDeleteStatment(table string, primarys []interface{}, columns []Column,
 	return str.String()
 }
 
-func buildInsertStatment(table string, rows []interface{}) string {
+func buildInsertStatment(table string, rows []interface{}, tableType string) string {
 	var str strings.Builder
-	str.WriteString("INSERT INTO `")
-	str.WriteString(table)
-	str.WriteString("` VALUES ")
-	for i, r := range rows {
-		if i > 0 {
-			str.WriteString(",")
-		}
-		str.WriteString("(")
-		for j, c := range r.([]interface{}) {
-			if j > 0 {
+	switch tableType {
+	case "BASE TABLE":
+		str.WriteString("INSERT INTO `")
+		str.WriteString(table)
+		str.WriteString("` VALUES ")
+		for i, r := range rows {
+			if i > 0 {
 				str.WriteString(",")
 			}
-			str.WriteString(interfaceToString(c))
+			str.WriteString("(")
+			for j, c := range r.([]interface{}) {
+				if j > 0 {
+					str.WriteString(",")
+				}
+				str.WriteString(interfaceToString(c))
+			}
+			str.WriteString(")")
 		}
-		str.WriteString(")")
+	case "SEQUENCE":
+		str.WriteString("ALTER SEQUENCE `")
+		str.WriteString(table)
+		str.WriteString("` RESTART WITH ")
+		str.WriteString(interfaceToString(rows[0].([]interface{})[0]))
 	}
 	str.WriteString(";")
 	return str.String()

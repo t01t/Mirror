@@ -28,6 +28,7 @@ type DB struct {
 type Table struct {
 	Name     string   `json:"name"`
 	Columns  []Column `json:"columns"`
+	Type     string   `json:"type"`
 	Primarys []int
 }
 
