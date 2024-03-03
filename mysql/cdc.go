@@ -94,6 +94,7 @@ RESTART:
 		if currentDate != today {
 			ms.DailyServerDBsBackup(today)
 			today = currentDate
+			continue
 		}
 
 		event := Event{
